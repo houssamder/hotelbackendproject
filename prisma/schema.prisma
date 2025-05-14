@@ -31,7 +31,7 @@ model Room {
 model Booking {
   id         Int       @id @default(autoincrement())
   name      String
-  Email     String     
+  Email     String  ?   
   phone     String?    // Optional: preferre
   clientId   Int?
   roomId     Int
