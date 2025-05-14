@@ -1,12 +1,14 @@
 const express = require('express');
 const app = express();
 
-const roomRoutes = require('../routes/roomRoutes');
-const clientRoutes = require('../routes/clientRoutes');
-const reservationRoutes = require('../routes/reservationRoutes');
+const roomRoutes = require('../src/routes/roomRoutes');
+const clientRoutes = require('../src/routes/clientRoutes');
+const reservationRoutes = require('../src/routes/reservationroutes');
+const authRoutes = require ('../src/routes/authRoutes.js')
 
 app.use(express.json());
 
+app.use('/auth', authRoutes);
 app.use('/rooms', roomRoutes);
 app.use('/clients', clientRoutes);
 app.use('/reservations', reservationRoutes);
@@ -14,5 +16,4 @@ app.use('/reservations', reservationRoutes);
 app.listen(3000, () => {
   console.log('Serveur démarré sur http://localhost:3000');
 });
-const authRoutes = require('../routes/authRoutes');
 app.use('/auth', authRoutes);

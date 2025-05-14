@@ -3,7 +3,11 @@ const prisma = new PrismaClient();
 
 exports.getAllClients = async (req, res) => {
   try {
-    const clients = await prisma.client.findMany();
+    const clients = await prisma.client.findMany({
+      where: {
+        isadmin: false, 
+      },
+    });
     res.json(clients);
   } catch (error) {
     res.status(500).json({ error: 'Erreur serveur' });

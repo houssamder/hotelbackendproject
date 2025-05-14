@@ -4,64 +4,53 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL") // Défini dans le .env
+  url      = env("DATABASE_URL") // Defined in your .env file
 }
 
 model Client {
-  id            Int        @id @default(autoincrement())
-  name          String
-  email         String     @unique
-  phone         String? // ex: étage préféré, type de lit, etc.   // ex: étage préféré, type de lit, etc.
-  bookings      Booking[]
-  createdAt     DateTime   @default(now())
-  isadmin       Boolean    @default(false)
+  id        Int        @id @default(autoincrement())
+  name      String
+  email     String     @unique
+  password  String
+  isadmin   Boolean    @default(false)
+  phone     String?    // Optional: preferred floor, bed type, etc.
+  bookings  Booking[]
+  createdAt DateTime   @default(now())
 }
 
 model Room {
-  id            Int        @id @default(autoincrement())
-  number        String     @unique
-  etage String    // "simple", "double", "suite"
-  price         Float
-  status        String     @default("available") // "available", "occupied", etc.
-  description   String?
-  bookings      Booking[]
-  activities    StaffActivity[]
-  plannings     Planning[]
+  id          Int             @id @default(autoincrement())
+  number      String        
+  type      String          // e.g., "simple", "double", "suite"
+  price       Float // "available", "occupied", etc.
+  description String?
+  bookings    Booking[]
+  activities  StaffActivity[]
 }
 
 model Booking {
-  id            Int        @id @default(autoincrement())
-  clientId      Int
-  roomId        Int
-  checkIn       DateTime
-  checkOut      DateTime
-  notes         String?
-  createdAt     DateTime   @default(now())
-  jeprefere Boolean @default(false)
-  client        Client     @relation(fields: [clientId], references: [id])
-  room          Room       @relation(fields: [roomId], references: [id])
+  id         Int       @id @default(autoincrement())
+  name      String
+  Email     String     
+  phone     String?    // Optional: preferre
+  clientId   Int?
+  roomId     Int
+  checkIn    DateTime
+  checkOut   DateTime
+  notes      String?
+  createdAt  DateTime  @default(now())
+  jeprefere  Boolean   @default(false)
+
+  client     Client  ?  @relation(fields: [clientId], references: [id])
+  room       Room      @relation(fields: [roomId], references: [id])
 }
 
 model StaffActivity {
-  id            Int        @id @default(autoincrement())
-  roomId        Int
-  type          String     // "cleaning", "repair", etc.
-  doneAt        DateTime   @default(now())
-  staffName     String
+  id        Int       @id @default(autoincrement())
+  roomId    Int
+  type      String    // "cleaning", "repair", etc.
+  doneAt    DateTime  @default(now())
+  staffName String
 
-  room          Room       @relation(fields: [roomId], references: [id])
-}
-model Utilisateur {
-  id       Int    @id @default(autoincrement())
-  username String @unique
-  password String
-  role     String
-}
-model Planning {
-  id            Int        @id @default(autoincrement())
-  roomId        Int
-  date          DateTime
-  status        String     // "available", "booked", etc.
-  room          Room       @relation(fields: [roomId], references: [id])
-
+  room      Room      @relation(fields: [roomId], references: [id])
 }

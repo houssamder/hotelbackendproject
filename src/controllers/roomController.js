@@ -9,7 +9,7 @@ exports.getAllRooms = async (req, res) => {
 
 // Créer une chambre
 exports.createRoom = async (req, res) => {
-  const { number, type, price } = req.body;
+  const { number, type, price ,descr} = req.body;
   const room = await prisma.room.create({
     data: { number, type, price: parseFloat(price) },
   });

@@ -2,43 +2,61 @@ const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
 const prisma = new PrismaClient();
 
+
 exports.register = async (req, res) => {
-  const { username, password, role } = req.body;
+  const { name, email, password, phone } = req.body;
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await prisma.utilisateur.create({
+
+    const client = await prisma.client.create({
       data: {
-        username,
+        name,
+        email,
         password: hashedPassword,
-        role
-      }
+        phone,
+        isadmin:  false,
+      },
     });
-    res.status(201).json({ message: 'Utilisateur enregistré', user });
+
+    res.status(201).json({ message: 'Client enregistré', client });
   } catch (error) {
-    res.status(400).json({ error: 'Erreur lors de l’enregistrement' });
+    console.error(error);
+    res.status(400).json({ error: 'Erreur lors de l’enregistrement du client' });
   }
 };
 
+
+
 exports.login = async (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
   try {
-    const user = await prisma.utilisateur.findUnique({
-      where: { username }
+    const client = await prisma.client.findUnique({
+      where: { email },
     });
 
-    if (!user) {
-      return res.status(401).json({ error: 'Utilisateur introuvable' });
+    if (!client) {
+      return res.status(401).json({ error: 'Client not found' });
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return res.status(401).json({ error: 'Mot de passe incorrect' });
+    const isValid = await bcrypt.compare(password, client.password);
+    if (!isValid) {
+      return res.status(401).json({ error: 'Invalid password' });
     }
 
-    res.json({ message: 'Connexion réussie', user: { id: user.id, username: user.username, role: user.role } });
+    res.status(200).json({
+      message: 'Login successful',
+      client: {
+        id: client.id,
+        name: client.name,
+        email: client.email,
+        phone: client.phone,
+        isadmin: client.isadmin,
+        createdAt: client.createdAt
+      }
+    });
   } catch (error) {
-    res.status(500).json({ error: 'Erreur lors de la connexion' });
+    res.status(500).json({ error: 'Login error' });
   }
 };
